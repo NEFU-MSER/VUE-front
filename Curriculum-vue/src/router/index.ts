@@ -21,9 +21,20 @@ const routers: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: '/main',
+        path: 'main',
         name: 'main',
-        component: () => import('../views/IsLogin/MainPage/MainView.vue')
+        component: () => import('../views/IsLogin/MainPage/MainView.vue'),
+        meta: {
+          isLogin: true
+        }
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('../views/IsLogin/Profile/ProfilesView.vue'),
+        meta: {
+          isLogin: true
+        }
       }
     ]
   }
@@ -49,6 +60,11 @@ router.beforeEach((to, from, next) => {
           path: '/login'
         })
       }
+    } else {
+      console.debug('is block')
+      next({
+        path: '/login'
+      })
     }
   } else {
     console.debug('is block')

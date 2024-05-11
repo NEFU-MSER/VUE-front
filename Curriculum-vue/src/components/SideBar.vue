@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Location } from '@element-plus/icons-vue'
-import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -15,15 +14,14 @@ import { RouterLink } from 'vue-router'
       </template>
       <!-- 子菜单 -->
       <el-menu-item-group>
-        <template #title><span>主页组</span></template>
-        <RouterLink to="/main">
+        <template #title><span>账户管理</span></template>
+        <router-link to="/main/profile">
           <el-menu-item index="1-1">
-            <span style="text-decoration: none">主页</span>
+            <span style="text-decoration: none">个人信息</span>
           </el-menu-item>
-        </RouterLink>
+        </router-link>
       </el-menu-item-group>
-      <el-menu-item-group title="实验室">
-      </el-menu-item-group>
+      <el-menu-item-group title="实验室"></el-menu-item-group>
     </el-sub-menu>
   </el-menu>
 </template>

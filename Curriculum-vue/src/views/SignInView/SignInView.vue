@@ -3,6 +3,11 @@ import { reactive, watch } from 'vue'
 import axios from 'axios'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import router from '@/router'
+import { accountServer } from '@/views/LoginView/AccountServer'
+import { ElMessageBox } from 'element-plus'
+import { User } from '@/components/classes/User'
+
+const server = accountServer
 
 const email: Array<String> = [
   '@nefu.edu.cn',
@@ -39,32 +44,43 @@ function convert(str: string) {
 
 async function onSubmit() {
   loading = true
-  // const postForm = new URLSearchParams()
-  // postForm.append('userName', signInForm.userName)
-  // postForm.append('userAccount', signInForm.userAccount)
-  // postForm.append('userPassword', signInForm.userPassword)
-  // postForm.append('gender', convert(signInForm.gender))
-  // postForm.append('e_mail', signInForm.e_mail + signInForm.select)
-  const postForm = {
-    userName: signInForm.userName,
-    userAccount: signInForm.userAccount,
-    userPassword: signInForm.userPassword,
-    gender: convert(signInForm.gender),
-    e_mail: signInForm.e_mail + signInForm.select
-  }
-  let res
-  await axios
-    .post('api' + '/signIn', postForm)
-    .then((response) => {
-      res = response.data
+  const user: User = new User(
+    signInForm.userName,
+    signInForm.userAccount,
+    signInForm.userPassword,
+    signInForm.e_mail + signInForm.select,
+    convert(signInForm.gender)
+  )
+  console.debug(user)
+  await axios({
+    method: 'POST',
+    url: 'https://my.api.com/signIn',
+    data: user
+  })
+    .then(async (response) => {
+      if (response.data.result === true) {
+        console.debug(sessionStorage)
+        await router.push('/main')
+      } else {
+        switch (response.data.reason) {
+          case 1:
+            ElMessageBox.alert('账户已存在！', '出错啦')
+            break
+          case 2:
+            ElMessageBox.alert('账户信息不合格', '出错啦')
+            break
+          default:
+            ElMessageBox.alert('我也不知道哪里错了，正常来说这条不会出现，除非你黑我', '你小子!')
+            break
+        }
+      }
     })
     .catch((error) => {
-      console.log(error)
+      console.error(error)
     })
     .finally(() => {
       loading = false
     })
-
 }
 
 function isFull() {

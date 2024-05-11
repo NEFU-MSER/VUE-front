@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import axios from 'axios'
-import { loginServer } from '@/views/LoginView/loginServer'
+import { accountServer } from '@/views/LoginView/AccountServer'
 import router from '@/router'
 
-const Server = loginServer
+const server = accountServer
 
 const loginForm = reactive({
   userAccount: '',
@@ -15,19 +15,22 @@ let disable = true
 let loading = false
 axios.defaults.timeout = 5000
 
-function onSubmit() {
+async function onSubmit() {
   loading = true
   console.log(loginForm)
-  axios
-    .post('https://my.api.com' + '/login', loginForm)
-    .then((response) => {
+  await axios({
+    method: 'POST',
+    url: 'https://my.api.com/login',
+    data: loginForm
+  })
+    .then(async (response) => {
       if (response.data === true) {
-        console.log(sessionStorage)
-        router.push('/main')
+        console.debug(sessionStorage)
+        await router.push('/main')
       }
     })
     .catch((error) => {
-      console.log(error)
+      console.error(error)
     })
     .finally(() => {
       // Server.shutdown()
