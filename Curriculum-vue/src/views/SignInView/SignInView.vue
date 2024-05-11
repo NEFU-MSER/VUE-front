@@ -64,13 +64,13 @@ async function onSubmit() {
       } else {
         switch (response.data.reason) {
           case 1:
-            ElMessageBox.alert('账户已存在！', '出错啦')
+            await ElMessageBox.alert('账户已存在！', '出错啦')
             break
           case 2:
-            ElMessageBox.alert('账户信息不合格', '出错啦')
+            await ElMessageBox.alert('账户信息不合格', '出错啦')
             break
           default:
-            ElMessageBox.alert('我也不知道哪里错了，正常来说这条不会出现，除非你黑我', '你小子!')
+            await ElMessageBox.alert('我也不知道哪里错了，正常来说这条不会出现，除非你黑我', '你小子!')
             break
         }
       }
@@ -89,14 +89,14 @@ function isFull() {
     signInForm.userName.length > 0 &&
     signInForm.userPassword.length >= 6 &&
     signInForm.userPassword === signInForm.passwordAgain &&
-    signInForm.e_mail.length >= 5 &&
-    signInForm.select != '' &&
-    (signInForm.gender === 'male' || signInForm.gender === 'female')
+    signInForm.e_mail.length >= 5
   )
 }
 
 watch(signInForm, () => {
   disable = !isFull()
+},{
+  deep: true
 })
 </script>
 
@@ -104,7 +104,7 @@ watch(signInForm, () => {
   <el-row style="height: 200px" />
   <el-row>
     <el-col :span="12" :offset="6">
-      <el-form v-loading="loading" v-model="signInForm" label-width="auto" class="box">
+      <el-form v-loading="loading" v-model="signInForm" label-width="auto" class="box" id="from">
         <el-row>
           <RouterLink to="/login">
             <el-icon color="cadetblue" size="20" class="icon">

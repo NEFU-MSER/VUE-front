@@ -3,6 +3,7 @@ import { reactive, watch } from 'vue'
 import axios from 'axios'
 import { accountServer } from '@/views/LoginView/AccountServer'
 import router from '@/router'
+import { ElMessageBox } from 'element-plus'
 
 const server = accountServer
 
@@ -24,9 +25,24 @@ async function onSubmit() {
     data: loginForm
   })
     .then(async (response) => {
-      if (response.data === true) {
+      if (response.data.result === true) {
         console.debug(sessionStorage)
         await router.push('/main')
+      } else {
+        switch (response.data.reason) {
+          case 1:
+            await ElMessageBox.alert('该账户未注册', '出错啦')
+            break
+          case 2:
+            await ElMessageBox.alert('密码错误', '出错啦')
+            break
+          default:
+            await ElMessageBox.alert(
+              '我也不知道哪里错了，正常来说这条不会出现，除非你黑我',
+              '你小子!'
+            )
+            break
+        }
       }
     })
     .catch((error) => {

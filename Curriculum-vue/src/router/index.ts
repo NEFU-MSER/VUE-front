@@ -18,16 +18,16 @@ const routers: Array<RouteRecordRaw> = [
     component: () => import('../App.vue'),
     meta: {
       isLogin: true
+    }
+  },
+  {
+    path: '/main',
+    name: 'main',
+    component: () => import('../views/IsLogin/MainPage/MainView.vue'),
+    meta: {
+      isLogin: true
     },
     children: [
-      {
-        path: 'main',
-        name: 'main',
-        component: () => import('../views/IsLogin/MainPage/MainView.vue'),
-        meta: {
-          isLogin: true
-        }
-      },
       {
         path: 'profile',
         name: 'profile',
@@ -37,7 +37,7 @@ const routers: Array<RouteRecordRaw> = [
         }
       }
     ]
-  }
+  },
 ]
 
 const router = createRouter({

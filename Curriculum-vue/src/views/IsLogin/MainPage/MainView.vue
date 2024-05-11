@@ -19,8 +19,9 @@ const siderWidth = ref('200px')
         <!-- 主要区域容器 -->
         <el-main>
           <el-card class="pm-layout-main overflow-scroll">
-            <p>main</p>
-            <router-view />
+            <suspense>
+              <router-view />
+            </suspense>
           </el-card>
         </el-main>
       </el-container>
@@ -28,7 +29,7 @@ const siderWidth = ref('200px')
   </el-container>
 </template>
 
-<style>
+<style lang="scss">
 .pm-layout {
   &__header {
     background-color: #0a0f25;
@@ -46,6 +47,7 @@ const siderWidth = ref('200px')
     overflow: hidden;
   }
 }
+
 .mainContainer {
   background-color: rgba(255, 255, 255, 0.7);
 }

@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import axios from 'axios'
-import type { User } from '@/components/classes/User'
+import { type User, convertNumber } from '@/components/classes/User'
+import { accountServer } from '@/views/LoginView/AccountServer'
+import { ElMessageBox } from 'element-plus'
+import { ref, watch } from 'vue'
 
+const Server = accountServer
+let disable = ref(true)
+let changeUser = ref()
 let user: User
+let change = ref(false)
+let passwordAgain = ref()
 await axios({
   method: 'get',
   url: 'https://my.api.com/profile'
@@ -10,21 +18,116 @@ await axios({
   .then((response) => {
     if (response.data.result != false) {
       user = response.data.data
+      changeUser = ref({ ...user })
+      passwordAgain = ref(user._userPassword)
     }
   })
   .finally()
+
+async function changeProfile() {
+  await axios({
+    method: 'POST',
+    url: 'https://my.api.com/changeProfile',
+    data: JSON.stringify(user)
+  }).then(async (response) => {
+    if (response.data.result == true) {
+      await ElMessageBox.alert('信息修改成功', '成功')
+      location.reload()
+    } else {
+      switch (response.data.reason) {
+        case 1:
+          await ElMessageBox.alert('修改失败', '出错啦')
+          break
+        case 2:
+          await ElMessageBox.alert('token失效', '出错啦')
+          break
+        default:
+          await ElMessageBox.alert(
+            '我也不知道哪里错了，正常来说这条不会出现，除非你黑我',
+            '你小子!'
+          )
+          break
+      }
+    }
+  })
+}
+
+function isFull() {
+  return (
+    changeUser.value.userName.length > 0 &&
+    changeUser.value.userPassword.length >= 6 &&
+    changeUser.value.userPassword === passwordAgain.value &&
+    changeUser.value.email.length >= 5
+  )
+}
+
+watch(changeUser,()=>{
+  disable.value = !isFull()
+  console.debug(isFull())
+},{
+  deep: true
+})
 </script>
 
 <template>
-  <el-card style="max-width: 800px">
+  <el-card style="max-width: 500px" v-show="!change">
     <template #header>
       <div class="card-header">
-        <span>{{ user.userName }}</span>
+        <span>用户名: {{ user._userName }}</span>
       </div>
     </template>
-    <p class="text item">{{ user.userAccount }}</p>
-    <p class="text item">{{ user.email }}</p>
-    <template #footer>没想好怎么写这玩意</template>
+    <p class="text item">你的账号: {{ user._userAccount }}</p>
+    <p class="text item">你的邮箱: {{ user._email }}</p>
+    <p class="text item">你的性别: {{ convertNumber(user._gender) }}</p>
+    <template #footer>
+      <el-switch v-model="change" size="large" />
+    </template>
+  </el-card>
+  <el-card style="max-width: 500px" v-show="change">
+    <template #header>
+      <div class="card-header">
+        <span>你的账户: {{ user._userAccount }}</span>
+      </div>
+    </template>
+    <el-form >
+      <el-input v-model="changeUser.userName" type="text" class="inputStyle" placeholder="姓名">
+        账户
+      </el-input>
+      <el-input
+        v-model="changeUser.userPassword"
+        type="password"
+        class="inputStyle"
+        placeholder="密码">
+        密码
+      </el-input>
+      <el-input
+        v-model="passwordAgain"
+        type="password"
+        class="inputStyle"
+        placeholder="再次输入密码">
+        再次输入密码
+      </el-input>
+      <el-input v-model="changeUser.email" type="text" class="inputStyle" placeholder="邮箱">
+        邮箱
+      </el-input>
+      <el-row>
+        <el-radio-group v-model="changeUser.gender" label="性别">
+          <el-radio value="0" size="large">男</el-radio>
+          <el-radio value="1" size="large">女</el-radio>
+        </el-radio-group>
+      </el-row>
+      <el-button
+        type="primary"
+        @click="changeProfile"
+        name="submit"
+        v-model:disabled="disable"
+        style="margin-top: 5px">
+        更改
+      </el-button>
+    </el-form>
+    <template #footer>
+      <el-switch v-model="change" size="large" />
+    </template>
   </el-card>
 </template>
 

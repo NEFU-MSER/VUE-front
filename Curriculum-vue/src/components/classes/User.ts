@@ -1,9 +1,9 @@
 export class User {
-  userName: string
-  userAccount: string
-  userPassword: string
-  email: string
-  gender: number
+  _userName: string
+  _userAccount: string
+  _userPassword: string
+  _email: string
+  _gender: number
 
   constructor(
     userName: string,
@@ -12,29 +12,41 @@ export class User {
     email: string,
     gender: number
   ) {
-    this.userName = userName
-    this.userAccount = userAccount
-    this.userPassword = userPassword
-    this.email = email
-    this.gender = gender
+    this._userName = userName
+    this._userAccount = userAccount
+    this._userPassword = userPassword
+    this._email = email
+    this._gender = gender
   }
+}
 
-  convert(str: string) {
-    switch (str) {
-      case 'male':
-        return 0
-      case 'female':
-        return 1
-      default:
-        return 0
-    }
-  }
 
-  stringifyUser(user: User) {
-    return JSON.stringify(user)
+export function convertString(str: string) {
+  switch (str) {
+    case 'male':
+      return 0
+    case 'female':
+      return 1
+    default:
+      return 0
   }
+}
 
-  parseUser(json: string) {
-    return <User>JSON.parse(json)
+export function convertNumber(x: number) {
+  switch (x) {
+    case 0:
+      return 'male'
+    case 1:
+      return 'female'
+    default:
+      return 'male'
   }
+}
+
+export function stringifyUser(user: User) {
+  return JSON.stringify(user)
+}
+
+export function parseUser(json: string) {
+  return <User>JSON.parse(json)
 }
