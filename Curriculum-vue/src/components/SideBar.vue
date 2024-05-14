@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Location } from '@element-plus/icons-vue'
+// import { Location } from '@element-plus/icons-vue'
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import { Location } from '@element-plus/icons-vue'
     <el-sub-menu index="1">
       <template #title>
         <el-icon>
-          <location />
+          <!--          <location />-->
         </el-icon>
         <span>导航栏</span>
       </template>

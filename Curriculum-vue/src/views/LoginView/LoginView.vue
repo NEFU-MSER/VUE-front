@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import axios from 'axios'
-import { accountServer } from '@/views/LoginView/AccountServer'
-import router from '@/router'
+import { accountServer } from '../LoginView/AccountServer'
+import router from '../../router/index'
 import { ElMessageBox } from 'element-plus'
 
 const server = accountServer
 
-const loginForm = reactive({
+let loginForm = reactive({
   userAccount: '',
   userPassword: ''
 })
@@ -58,9 +58,15 @@ function isFull() {
   return loginForm.userAccount.length === 10 && loginForm.userPassword.length >= 6
 }
 
-watch(loginForm, () => {
-  disable = !isFull()
-})
+watch(
+  loginForm,
+  () => {
+    disable = !isFull()
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <template>

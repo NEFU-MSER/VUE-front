@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import axios from 'axios'
-import { ArrowLeft } from '@element-plus/icons-vue'
-import router from '@/router'
-import { accountServer } from '@/views/LoginView/AccountServer'
+import router from '../../router/index'
+import { accountServer } from '../LoginView/AccountServer'
 import { ElMessageBox } from 'element-plus'
-import { User } from '@/components/classes/User'
+import { User } from '@/classes/User'
 
 const server = accountServer
 
@@ -17,7 +16,7 @@ const email: Array<String> = [
   '@outlook.com',
   '@gmail.com'
 ]
-const signInForm = reactive({
+let signInForm = reactive({
   userName: '',
   userAccount: '',
   userPassword: '',
@@ -70,7 +69,10 @@ async function onSubmit() {
             await ElMessageBox.alert('账户信息不合格', '出错啦')
             break
           default:
-            await ElMessageBox.alert('我也不知道哪里错了，正常来说这条不会出现，除非你黑我', '你小子!')
+            await ElMessageBox.alert(
+              '我也不知道哪里错了，正常来说这条不会出现，除非你黑我',
+              '你小子!'
+            )
             break
         }
       }
@@ -93,11 +95,15 @@ function isFull() {
   )
 }
 
-watch(signInForm, () => {
-  disable = !isFull()
-},{
-  deep: true
-})
+watch(
+  signInForm,
+  () => {
+    disable = !isFull()
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <template>
@@ -105,13 +111,6 @@ watch(signInForm, () => {
   <el-row>
     <el-col :span="12" :offset="6">
       <el-form v-loading="loading" v-model="signInForm" label-width="auto" class="box" id="from">
-        <el-row>
-          <RouterLink to="/login">
-            <el-icon color="cadetblue" size="20" class="icon">
-              <ArrowLeft />
-            </el-icon>
-          </RouterLink>
-        </el-row>
         <el-input v-model="signInForm.userName" type="text" class="inputStyle" placeholder="姓名" />
         <el-input
           v-model="signInForm.userAccount"
@@ -155,6 +154,9 @@ watch(signInForm, () => {
           style="margin-top: 5px">
           注册
         </el-button>
+        <RouterLink to="/login">
+          <el-button type="danger" style="margin-top: 5px; margin-left: 10px">返回</el-button>
+        </RouterLink>
       </el-form>
     </el-col>
   </el-row>

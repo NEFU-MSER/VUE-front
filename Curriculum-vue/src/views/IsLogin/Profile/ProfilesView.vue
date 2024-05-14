@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { type User, convertNumber } from '@/components/classes/User'
-import { accountServer } from '@/views/LoginView/AccountServer'
+import { User, convertNumber } from '@/classes/User'
+import { accountServer } from '../../LoginView/AccountServer'
 import { ElMessageBox } from 'element-plus'
 import { ref, watch } from 'vue'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Server = accountServer
 let disable = ref(true)
 let changeUser = ref()
@@ -18,8 +19,8 @@ await axios({
   .then((response) => {
     if (response.data.result != false) {
       user = response.data.data
-      changeUser = ref({ ...user })
-      passwordAgain = ref(user._userPassword)
+      changeUser = ref(new User(user._userName, user._userAccount, '', user._email, user._gender))
+      passwordAgain = ref('')
     }
   })
   .finally()
@@ -28,7 +29,7 @@ async function changeProfile() {
   await axios({
     method: 'POST',
     url: 'https://my.api.com/changeProfile',
-    data: JSON.stringify(user)
+    data: JSON.stringify(changeUser.value)
   }).then(async (response) => {
     if (response.data.result == true) {
       await ElMessageBox.alert('信息修改成功', '成功')
@@ -53,24 +54,28 @@ async function changeProfile() {
 }
 
 function isFull() {
+  const temp: User = changeUser.value
   return (
-    changeUser.value.userName.length > 0 &&
-    changeUser.value.userPassword.length >= 6 &&
-    changeUser.value.userPassword === passwordAgain.value &&
-    changeUser.value.email.length >= 5
+    temp._userName.length > 0 &&
+    temp._userPassword.length >= 6 &&
+    temp._userPassword === passwordAgain.value &&
+    temp._email.length >= 5
   )
 }
 
-watch(changeUser,()=>{
-  disable.value = !isFull()
-  console.debug(isFull())
-},{
-  deep: true
-})
+watch(
+  changeUser,
+  () => {
+    disable = ref(!isFull())
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <template>
-  <el-card style="max-width: 500px" v-show="!change">
+  <el-card style="max-width: 500px" v-if="!change">
     <template #header>
       <div class="card-header">
         <span>用户名: {{ user._userName }}</span>
@@ -83,18 +88,19 @@ watch(changeUser,()=>{
       <el-switch v-model="change" size="large" />
     </template>
   </el-card>
-  <el-card style="max-width: 500px" v-show="change">
+
+  <el-card style="max-width: 500px" v-if="change">
     <template #header>
       <div class="card-header">
         <span>你的账户: {{ user._userAccount }}</span>
       </div>
     </template>
-    <el-form >
-      <el-input v-model="changeUser.userName" type="text" class="inputStyle" placeholder="姓名">
-        账户
+    <el-form>
+      <el-input v-model="changeUser._userName" type="text" class="inputStyle" placeholder="姓名">
+        姓名
       </el-input>
       <el-input
-        v-model="changeUser.userPassword"
+        v-model="changeUser._userPassword"
         type="password"
         class="inputStyle"
         placeholder="密码">
@@ -107,11 +113,11 @@ watch(changeUser,()=>{
         placeholder="再次输入密码">
         再次输入密码
       </el-input>
-      <el-input v-model="changeUser.email" type="text" class="inputStyle" placeholder="邮箱">
+      <el-input v-model="changeUser._email" type="text" class="inputStyle" placeholder="邮箱">
         邮箱
       </el-input>
       <el-row>
-        <el-radio-group v-model="changeUser.gender" label="性别">
+        <el-radio-group v-model="changeUser._gender" label="性别">
           <el-radio value="0" size="large">男</el-radio>
           <el-radio value="1" size="large">女</el-radio>
         </el-radio-group>

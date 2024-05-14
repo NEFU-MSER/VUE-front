@@ -1,5 +1,5 @@
 import { createServer, Model } from 'miragejs'
-import { User } from '@/components/classes/User'
+import { User } from '@/classes/User'
 import { buildToken } from '@/components/utils/TokenUtils'
 
 function isLegal(user: User) {
@@ -71,9 +71,12 @@ export const accountServer = createServer({
         sessionStorage.clear() //token失效
         return { result: false, reason: 2 }
       }
+      console.debug(account)
+      console.debug('db:', schema.db.users)
       //防止篡改account
-      if (isLegal(user) && account === user._userAccount) {
+      if (account === user._userAccount) {
         schema.db.users.update({ key: user._userAccount }, { User: user })
+        console.debug('db:', schema.db.users)
         return { result: true, reason: 0 } //修改成功了
       } else return { result: false, reason: 1 } //修改失败了
     })
