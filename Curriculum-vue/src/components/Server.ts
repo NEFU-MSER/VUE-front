@@ -1,6 +1,9 @@
-import { createServer, Model } from 'miragejs'
+import { createServer } from 'miragejs'
 import { User } from '@/classes/User'
 import { buildToken } from '@/components/utils/TokenUtils'
+import { Course } from '@/classes/Course'
+import { Lib } from '@/classes/Lib'
+import { Occupation } from '@/classes/Occupation'
 
 function isLegal(user: User) {
   return (
@@ -12,11 +15,7 @@ function isLegal(user: User) {
   )
 }
 
-export const accountServer = createServer({
-  models: {
-    user: Model
-  },
-
+export const server = createServer({
   routes() {
     this.urlPrefix = 'https://my.api.com'
 
@@ -80,12 +79,97 @@ export const accountServer = createServer({
         return { result: true, reason: 0 } //修改成功了
       } else return { result: false, reason: 1 } //修改失败了
     })
+
+    this.get('/getCourses', (schema) => {
+      return JSON.stringify({ result: schema.db.Courses, reason: 0 })
+    })
+
+    this.get('getLibs', (schema) => {
+      return JSON.stringify({
+        result: schema.db.Libs.sort((first: any, second: any) => (first.key > second.key ? 1 : -1)),
+        reason: 0
+      })
+    })
+
+    this.post('/addCourse', (schema, req) => {
+      const course: Course = JSON.parse(req.requestBody)
+      console.debug(course)
+      if (!schema.db.Courses.includes({ key: course._courseName })) {
+        schema.db.Courses.push({ Course: course, key: course._courseName })
+        return JSON.stringify({ result: true, reason: 0 })
+      } else {
+        return JSON.stringify({ result: false, reason: 1 })
+      }
+    })
+
+    this.post('/addLib', (schema, req) => {
+      const postForm: { _libId: number; _libType: string } = JSON.parse(req.requestBody)
+      if (schema.db.Libs.findBy({ key: postForm._libId }) == null) {
+        const lib: Lib = new Lib(postForm._libId, postForm._libType)
+        schema.db.Libs.push({ Lib: lib, key: lib._libId })
+        return JSON.stringify({ result: true, reason: '创建成功' })
+      } else {
+        return JSON.stringify({ result: false, reason: '创建失败，该教室已存在' })
+      }
+    })
   },
 
   seeds(server) {
     const defaultUser = new User('KUKUKING', '2021213196', '112210ly', 'ly112210@outlook.com', 0)
     server.db.loadData({
       users: [{ User: defaultUser, key: defaultUser._userAccount }]
+    })
+
+    //课程实例
+    const exampleCourse0: Course = new Course(defaultUser, 'web框架')
+    const exampleCourse1: Course = new Course(defaultUser, '软件测试')
+    const exampleCourse2: Course = new Course(defaultUser, '需求管理')
+    const exampleCourse3: Course = new Course(defaultUser, 'Java开发')
+    //实验室实例
+    const exampleLib1: Lib = new Lib(906, '计算机实验室')
+    const exampleLib0: Lib = new Lib(908, '计算机实验室')
+    //空列表成功添加
+    exampleLib0.addOccupation(
+      new Occupation(exampleCourse0, {
+        week: [1, 13],
+        day: 1,
+        time: [1, 2]
+      })
+    )
+    //空列表成功添加
+    exampleLib1.addOccupation(
+      new Occupation(exampleCourse1, {
+        week: [2, 8],
+        day: 1,
+        time: [5, 6]
+      })
+    )
+    //时间冲突失败添加
+    exampleLib1.addOccupation(
+      new Occupation(exampleCourse2, {
+        week: [1, 3],
+        day: 1,
+        time: [1, 6]
+      })
+    )
+    //时间不冲突成功添加
+    exampleLib1.addOccupation(
+      new Occupation(exampleCourse3, {
+        week: [2, 8],
+        day: 1,
+        time: [3, 4]
+      })
+    )
+
+    server.db.loadData({
+      Courses: [
+        { Course: exampleCourse0, key: exampleCourse0._courseName },
+        { Course: exampleCourse1, key: exampleCourse1._courseName }
+      ],
+      Libs: [
+        { Lib: exampleLib0, key: exampleLib0._libId },
+        { Lib: exampleLib1, key: exampleLib1._libId }
+      ]
     })
   }
 })

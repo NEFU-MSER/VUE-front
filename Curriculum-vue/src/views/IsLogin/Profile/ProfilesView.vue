@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { User, convertNumber } from '@/classes/User'
-import { accountServer } from '../../LoginView/AccountServer'
+import { server } from '@/components/Server'
 import { ElMessageBox } from 'element-plus'
 import { ref, watch } from 'vue'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Server = accountServer
+const Server = server
 let disable = ref(true)
 let changeUser = ref()
 let user: User

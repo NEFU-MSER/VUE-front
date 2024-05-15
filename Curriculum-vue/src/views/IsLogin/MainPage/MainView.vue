@@ -13,7 +13,7 @@ const siderWidth = ref('200px')
     <el-container>
       <!-- 侧边栏容器 -->
       <el-aside :width="siderWidth" class="pm-layout__aside overflow-y-scroll">
-        <Sider />
+        <Sider style="margin-top: 20px" />
       </el-aside>
       <el-container>
         <!-- 主要区域容器 -->

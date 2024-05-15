@@ -2,11 +2,11 @@
 import { reactive, watch } from 'vue'
 import axios from 'axios'
 import router from '../../router/index'
-import { accountServer } from '../LoginView/AccountServer'
+import { server } from '../../components/Server'
 import { ElMessageBox } from 'element-plus'
 import { User } from '@/classes/User'
 
-const server = accountServer
+const Server = server
 
 const email: Array<String> = [
   '@nefu.edu.cn',

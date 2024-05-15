@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import axios from 'axios'
-import { accountServer } from '../LoginView/AccountServer'
+import { server } from '@/components/Server'
 import router from '../../router/index'
 import { ElMessageBox } from 'element-plus'
 
-const server = accountServer
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const Server = server
 
 let loginForm = reactive({
   userAccount: '',

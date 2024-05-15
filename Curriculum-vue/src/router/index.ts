@@ -27,6 +27,14 @@ const routers: Array<RouteRecordRaw> = [
         meta: {
           isLogin: true
         }
+      },
+      {
+        path: 'lib',
+        name: 'lib',
+        component: () => import('../views/IsLogin/Lib/LibView.vue'),
+        meta: {
+          isLogin: true
+        }
       }
     ]
   }
@@ -47,19 +55,19 @@ router.beforeEach((to, from, next) => {
         console.debug('is login')
         next()
       } else {
-        console.debug('is block')
+        console.debug('fake token')
         next({
           path: '/login'
         })
       }
     } else {
-      console.debug('is block')
+      console.debug('null token')
       next({
         path: '/login'
       })
     }
   } else {
-    console.debug('is block')
+    console.debug('no need login')
     next()
   }
 })
