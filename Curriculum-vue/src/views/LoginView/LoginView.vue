@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { onMounted, reactive, watch } from 'vue'
 import axios from 'axios'
 import { server } from '@/components/Server'
 import router from '../../router/index'
@@ -68,6 +68,10 @@ watch(
     deep: true
   }
 )
+
+onMounted(() => {
+  ElMessageBox.alert('账号1234567890, 密码123456, 或者你可以自己注册', '提示')
+})
 </script>
 
 <template>

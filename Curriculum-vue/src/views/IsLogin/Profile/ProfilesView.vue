@@ -1,29 +1,35 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { User, convertNumber } from '@/classes/User'
+import { User, convertNumber } from '@/components/classes/User'
 import { server } from '@/components/Server'
 import { ElMessageBox } from 'element-plus'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Server = server
+
+let loadDone = ref(false)
 let disable = ref(true)
 let changeUser = ref()
 let user: User
 let change = ref(false)
 let passwordAgain = ref()
-await axios({
-  method: 'get',
-  url: 'https://my.api.com/profile'
-})
-  .then((response) => {
-    if (response.data.result != false) {
-      user = response.data.data
-      changeUser = ref(new User(user._userName, user._userAccount, '', user._email, user._gender))
-      passwordAgain = ref('')
-    }
+
+async function loadData() {
+  await axios({
+    method: 'get',
+    url: 'https://my.api.com/profile'
   })
-  .finally()
+    .then((response) => {
+      if (response.data.result != false) {
+        user = response.data.data
+        changeUser = ref(new User(user._userName, user._userAccount, '', user._email, user._gender))
+        passwordAgain = ref('')
+        loadDone.value = true
+      }
+    })
+    .finally()
+}
 
 async function changeProfile() {
   await axios({
@@ -32,8 +38,10 @@ async function changeProfile() {
     data: JSON.stringify(changeUser.value)
   }).then(async (response) => {
     if (response.data.result == true) {
-      await ElMessageBox.alert('信息修改成功', '成功')
-      location.reload()
+      await ElMessageBox.alert('信息修改成功', '成功').catch((error) => {
+        console.error(error)
+      })
+      await loadData()
     } else {
       switch (response.data.reason) {
         case 1:
@@ -66,16 +74,21 @@ function isFull() {
 watch(
   changeUser,
   () => {
-    disable = ref(!isFull())
+    // disable = ref(!isFull())
+    disable.value = false
   },
   {
     deep: true
   }
 )
+
+onMounted(() => {
+  loadData()
+})
 </script>
 
 <template>
-  <el-card style="max-width: 500px" v-if="!change">
+  <el-card style="max-width: 500px" v-if="!change && loadDone">
     <template #header>
       <div class="card-header">
         <span>用户名: {{ user._userName }}</span>
@@ -132,7 +145,7 @@ watch(
       </el-button>
     </el-form>
     <template #footer>
-      <el-switch v-model="change" size="large" />
+      <el-switch v-model="change" size="large">更改</el-switch>
     </template>
   </el-card>
 </template>

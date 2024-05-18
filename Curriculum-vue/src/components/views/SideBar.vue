@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 // import { Location } from '@element-plus/icons-vue'
-import LibView from '@/views/IsLogin/Lib/LibView.vue'
 </script>
 
 <template>
@@ -24,9 +23,14 @@ import LibView from '@/views/IsLogin/Lib/LibView.vue'
       </el-menu-item-group>
       <el-menu-item-group title="教学管理">
         <router-link to="/main/lib">
-        <el-menu-item index="2-1">
-          <span style="text-decoration: none">实验室</span>
-        </el-menu-item>
+          <el-menu-item index="2-1">
+            <span style="text-decoration: none">教室管理</span>
+          </el-menu-item>
+        </router-link>
+        <router-link to="/main/course">
+          <el-menu-item index="2-2">
+            <span style="text-decoration: none">课程管理</span>
+          </el-menu-item>
         </router-link>
       </el-menu-item-group>
     </el-sub-menu>

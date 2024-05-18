@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { onMounted, reactive, watch } from 'vue'
 import axios from 'axios'
 import router from '../../router/index'
 import { server } from '../../components/Server'
 import { ElMessageBox } from 'element-plus'
-import { User } from '@/classes/User'
+import { User } from '@/components/classes/User'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Server = server
 
 const email: Array<String> = [
@@ -104,6 +105,10 @@ watch(
     deep: true
   }
 )
+
+onMounted(() => {
+  ElMessageBox.alert('账号10位数字, 密码大于6位, 姓名,邮箱必填; 数据不上传服务器放心写', '提示')
+})
 </script>
 
 <template>

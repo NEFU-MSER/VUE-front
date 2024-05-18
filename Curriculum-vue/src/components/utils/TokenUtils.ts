@@ -1,5 +1,5 @@
 import { deCode, enCode } from '../utils/EncodeUtils'
-import { type User } from '@/classes/User'
+import { type User } from '@/components/classes/User'
 
 //根据userAccount创建token
 export function buildToken(user: User) {
