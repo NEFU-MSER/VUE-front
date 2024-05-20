@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Lib } from '@/components/classes/Lib'
-import { type Ref, ref, watch } from 'vue'
+import { onMounted, type Ref, ref, watch } from 'vue'
 import { dayConvert, Occupation } from '@/components/classes/Occupation'
 
 interface timeTableItem {
@@ -10,11 +10,27 @@ interface timeTableItem {
   long: number
 }
 
+// 屏幕宽度
+const windowWidth = ref(0)
+// 屏幕高度
+const windowHeight = ref(0)
+// 生命周期
+onMounted(() => {
+  getWindowResize()
+  window.addEventListener('resize', getWindowResize)
+})
+// 获取屏幕尺寸
+const getWindowResize = function () {
+  windowWidth.value = window.innerWidth
+  windowHeight.value = window.innerHeight
+}
+
 let props = defineProps({
   lib: Object,
   newOccupation: Occupation
 })
 
+let tableWidth = ref('1000px')
 let localLib = ref(props.lib as Lib)
 let tips = ref('')
 let weekNum = ref(1)
@@ -57,7 +73,7 @@ function convert() {
     for (const [index, occupation] of props.lib._libOccupations.entries()) {
       for (const classTime of occupation._classTime) {
         if (classTime.week[0] <= weekNum.value && weekNum.value <= classTime.week[1]) {
-          for (let i = classTime.time[0]; i <= classTime.time[1]; i++) {
+          for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
             tempTable[classTime.day - 1][i] = {
               name: occupation._course._courseName,
               colourIndex: index % 10,
@@ -68,24 +84,29 @@ function convert() {
         }
       }
     }
+    week.value = tempTable
   }
   if (typeof props?.newOccupation === 'object') {
     const classTime = props.newOccupation._classTime[0]
     if (classTime.week[0] <= weekNum.value && weekNum.value <= classTime.week[1]) {
       let right = true
-      for (let i = classTime.time[0]; i <= classTime.time[1]; i++) {
-        right = week.value[classTime.day - 1][i] == false
+      for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
+        if (week.value[classTime.day - 1][i] != false) {
+          right = false
+          break
+        }
       }
       if (right) {
-        for (let i = classTime.time[0]; i <= classTime.time[1]; i++) {
+        for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
           tempTable[classTime.day - 1][i] = {
             name: props.newOccupation._course._courseName,
             colourIndex: 10,
             start: i == classTime.time[0] - 1,
-            long: i == classTime.time[0] ? classTime.time[1] - classTime.time[0] + 1 : 0
+            long: i == classTime.time[0] - 1 ? classTime.time[1] - classTime.time[0] + 1 : 0
           }
           week.value = tempTable
         }
+        tips.value = ''
       } else {
         tips.value = '时间冲突'
       }
@@ -111,27 +132,23 @@ watch(
     :column="1"
     size="small"
     border>
-    <template v-for="(day, indexWeek) of week" :key="indexWeek">
+    <template v-for="(day, indexDay) of week" :key="indexDay">
       <el-descriptions-item>
         <template #label>
           <div class="cell-item" style="padding: 5px 0 5px 0">
-            {{ dayConvert(indexWeek) }}
+            {{ dayConvert(indexDay) }}
           </div>
         </template>
-        <el-row style="height: 30px; width: 900px">
-          <template v-for="(time, indexDay) of day" :key="indexDay">
+        <el-row :style="tableWidth" class="row">
+          <template v-for="(time, indexTime) of day" :key="indexTime">
             <template v-if="time == false">
               <el-col :span="2" style="height: 30px">
-                <h4 class="none">&nbsp;</h4>
+                <h4 class="none">第{{ indexTime + 1 }}节</h4>
               </el-col>
             </template>
             <template v-else>
-              <el-col
-                :span="time.long * 2"
-                class="startAndEnd"
-                :style="colour[time.colourIndex] + ';height: 30px'"
-                v-if="time.start">
-                <h4>{{ time.name }}</h4>
+              <el-col :span="time.long * 2" :v-if="time.start">
+                <h4 class="startAndEnd" :style="colour[time.colourIndex]">{{ time.name }}</h4>
               </el-col>
             </template>
           </template>
@@ -139,6 +156,7 @@ watch(
       </el-descriptions-item>
     </template>
   </el-descriptions>
+  <h3 style="color: red" v-if="tips != ''">{{ tips }}</h3>
 </template>
 
 <style scoped>
@@ -152,10 +170,16 @@ watch(
   font-family: 'Microsoft YaHei UI Light', serif;
 }
 .none {
+  text-align: center;
+  height: 100%;
+  border-radius: 5px;
   text-decoration: none;
-  color: darkslategrey;
+  color: rgba(47, 79, 79, 0.5);
   font-weight: bold;
+  font-size: small;
   font-family: 'Microsoft YaHei UI Light', serif;
+  margin: 0 2px 0 2px;
+  background: rgba(95, 158, 160, 0.15);
 }
 .end {
   border-top-left-radius: 5px;
@@ -164,14 +188,19 @@ watch(
 }
 .startAndEnd {
   border-radius: 5px;
-  padding: 0 0 0 20px;
   text-decoration: none;
-  color: rgba(17, 17, 17, 0.7);
+  color: rgba(17, 17, 17, 0.6);
   font-weight: bold;
   font-size: medium;
   font-family: 'Microsoft YaHei UI Light', serif;
+  text-align: center;
+  margin: 0 2px 0 2px;
+  height: 100%;
 }
 h4 {
   margin: auto;
+}
+.row {
+  height: 30px;
 }
 </style>
