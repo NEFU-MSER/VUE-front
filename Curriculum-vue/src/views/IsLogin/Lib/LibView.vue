@@ -4,6 +4,7 @@ import { server } from '@/components/Server'
 import { onMounted, ref } from 'vue'
 import { Lib } from '@/components/classes/Lib'
 import { ElMessageBox } from 'element-plus'
+import OccupationVisable from '@/components/views/OccupationVisable.vue'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Server = server
@@ -104,18 +105,14 @@ onMounted(() => {
     </el-col>
   </el-row>
 
-  <el-card style="max-width: 800px" v-if="lib._libId != -1 && !add">
-    <template #header>
-      <div class="card-header">
-        <span>{{ lib._libId }} {{ lib._libType }}</span>
-      </div>
-    </template>
+  <template v-if="lib._libId != -1 && !add">
     <el-table :data="lib._libOccupations" stripe style="width: 100%">
       <el-table-column prop="_course._courseName" label="课程名" width="250px" />
       <el-table-column prop="_course._teacherName" label="授课人" width="200px" />
       <el-table-column prop="_timeDescribe" label="授课时间" width="300px" />
     </el-table>
-  </el-card>
+    <OccupationVisable :lib="lib" />
+  </template>
 
   <el-card style="max-width: 800px" v-if="add">
     <template #header>

@@ -2,7 +2,7 @@
 import { onMounted, reactive, watch } from 'vue'
 import axios from 'axios'
 import router from '../../router/index'
-import { server } from '../../components/Server'
+import { server } from '@/components/Server'
 import { ElMessageBox } from 'element-plus'
 import { User } from '@/components/classes/User'
 

@@ -86,9 +86,8 @@ export class LoadData {
   }
 
   async init(): Promise<boolean> {
-    let loadC, loadL: boolean
-    loadC = await this.loadCourses('/getMyCourses')
-    loadL = await this.loadLibs('/getLibs')
+    const loadC = await this.loadCourses('/getMyCourses')
+    const loadL = await this.loadLibs('/getLibs')
 
     if (loadC && loadL) {
       this.Sum.value.splice(0, Infinity)

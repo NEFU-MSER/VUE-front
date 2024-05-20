@@ -32,6 +32,11 @@
             <span style="text-decoration: none">课程管理</span>
           </el-menu-item>
         </router-link>
+        <!--        <router-link to="/main/test">-->
+        <!--          <el-menu-item index="2-3">-->
+        <!--            <span style="text-decoration: none">testView</span>-->
+        <!--          </el-menu-item>-->
+        <!--        </router-link>-->
       </el-menu-item-group>
     </el-sub-menu>
   </el-menu>

@@ -6,8 +6,6 @@ import { Lib } from '@/components/classes/Lib'
 import { Occupation } from '@/components/classes/Occupation'
 import type { OccupationSum } from '@/components/classes/OccupationSum'
 import { cloneDeep } from 'lodash'
-import { result } from 'lodash'
-import type { ResType } from '@/components/interface/ResType'
 
 function isLegal(user: User) {
   return (

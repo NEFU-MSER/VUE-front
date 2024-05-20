@@ -36,14 +36,14 @@ const routers: Array<RouteRecordRaw> = [
           isLogin: true
         }
       },
-      // {
-      //   path: 'show',
-      //   name: 'show',
-      //   component: () => import('../views/IsLogin/TempShow.vue'),
-      //   meta: {
-      //     isLogin: true
-      //   }
-      // },
+      {
+        path: 'test',
+        name: 'test',
+        component: () => import('@/components/views/TestView.vue'),
+        meta: {
+          isLogin: true
+        }
+      },
       {
         path: 'course',
         name: 'course',

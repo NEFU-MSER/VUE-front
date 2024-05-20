@@ -304,14 +304,13 @@ async function addOccupation() {
     })
 }
 
-watch(appendLibId, () => {
+function changeLib() {
   for (const l of loadData.libs.value) {
     if (appendLibId.value[0] == l._libId) {
       selectLab.value = l
-      console.log(selectLab)
     }
   }
-})
+}
 </script>
 
 <template>
@@ -321,70 +320,72 @@ watch(appendLibId, () => {
       添加课程
     </el-button>
   </el-row>
-  <template v-if="loadDone">
-    <el-collapse accordion>
-      <template v-for="(sum, index) of loadData.Sum.value" :key="index">
-        <el-collapse-item :title="sum._course._courseName">
-          <!--    添加课时      -->
-          <el-row>
-            <!--  @click="addOccupation()"          -->
-            <el-col :span="3">
-              <h4>已安排课时: {{ sum._course._courseTime[0] }}</h4>
-            </el-col>
-            <el-col :span="3">
-              <h4>总课时: {{ sum._course._courseTime[1] }}</h4>
-            </el-col>
-            <el-col :span="12">
-              <el-progress
-                :text-inside="true"
-                :stroke-width="26"
-                :percentage="(sum._course._courseTime[0] / sum._course._courseTime[1]) * 100"
-                style="margin-top: 15px" />
-            </el-col>
-            <el-col :span="4" style="margin-left: auto">
-              <el-button
-                type="danger"
-                size="small"
-                @click="deleteCourse(sum)"
-                style="margin: 17px 0 0 0">
-                删除课程
-              </el-button>
-              <el-button
-                type="primary"
-                size="small"
-                @click="initAdd(sum)"
-                style="margin: 17px 0 0 20px">
-                添加课时
-              </el-button>
-            </el-col>
-          </el-row>
-          <!--    课时展示      -->
-          <el-table :data="sum._occupationByLib" :stripe="true">
-            <el-table-column prop="libId" label="授课教室" :sortable="true" />
-            <el-table-column prop="classTime.week[0]" label="开始周" :sortable="true" />
-            <el-table-column prop="classTime.week[1]" label="结束周" :sortable="true" />
-            <el-table-column prop="classTime.day" label="星期" :sortable="true" />
-            <el-table-column prop="classTime.time[0]" label="上课时间" :sortable="true" />
-            <el-table-column prop="classTime.time[1]" label="下课时间" :sortable="true" />
-            <el-table-column fixed="right" label="操作" width="120">
-              <template #default="scope">
-                <el-button link type="primary" size="small" @click="initChange(sum, scope.row)">
-                  修改
-                </el-button>
+  <el-scrollbar>
+    <template v-if="loadDone">
+      <el-collapse accordion>
+        <template v-for="(sum, index) of loadData.Sum.value" :key="index">
+          <el-collapse-item :title="sum._course._courseName">
+            <!--    添加课时      -->
+            <el-row>
+              <!--  @click="addOccupation()"          -->
+              <el-col :span="3">
+                <h4>已安排课时: {{ sum._course._courseTime[0] }}</h4>
+              </el-col>
+              <el-col :span="3">
+                <h4>总课时: {{ sum._course._courseTime[1] }}</h4>
+              </el-col>
+              <el-col :span="12">
+                <el-progress
+                  :text-inside="true"
+                  :stroke-width="26"
+                  :percentage="(sum._course._courseTime[0] / sum._course._courseTime[1]) * 100"
+                  style="margin-top: 15px" />
+              </el-col>
+              <el-col :span="4" style="margin-left: auto">
                 <el-button
-                  link
                   type="danger"
                   size="small"
-                  @click="deleteOccupation(sum, scope.row)">
-                  删除
+                  @click="deleteCourse(sum)"
+                  style="margin: 17px 0 0 0">
+                  删除课程
                 </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-collapse-item>
-      </template>
-    </el-collapse>
-  </template>
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click="initAdd(sum)"
+                  style="margin: 17px 0 0 20px">
+                  添加课时
+                </el-button>
+              </el-col>
+            </el-row>
+            <!--    课时展示      -->
+            <el-table :data="sum._occupationByLib" :stripe="true">
+              <el-table-column prop="libId" label="授课教室" :sortable="true" />
+              <el-table-column prop="classTime.week[0]" label="开始周" :sortable="true" />
+              <el-table-column prop="classTime.week[1]" label="结束周" :sortable="true" />
+              <el-table-column prop="classTime.day" label="星期" :sortable="true" />
+              <el-table-column prop="classTime.time[0]" label="上课时间" :sortable="true" />
+              <el-table-column prop="classTime.time[1]" label="下课时间" :sortable="true" />
+              <el-table-column fixed="right" label="操作" width="120">
+                <template #default="scope">
+                  <el-button link type="primary" size="small" @click="initChange(sum, scope.row)">
+                    修改
+                  </el-button>
+                  <el-button
+                    link
+                    type="danger"
+                    size="small"
+                    @click="deleteOccupation(sum, scope.row)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-collapse-item>
+        </template>
+      </el-collapse>
+    </template>
+  </el-scrollbar>
   <!-- 新课程对话框 -->
   <el-dialog v-model="addCourseFormVisible" title="添加课程" width="70%">
     <el-form :model="newCourse">
@@ -407,7 +408,7 @@ watch(appendLibId, () => {
   </el-dialog>
   <!-- 添加课时 -->
   <el-dialog v-model="addTimeFormVisible" title="添加新课时" width="80%">
-    <!--    <OV :lib="selectLab" :new-occupation="newOccupation" />-->
+    <OV :lib="selectLab" :new-occupation="newOccupation" />
     <el-descriptions class="margin-top" :column="3" size="large" border>
       <el-descriptions-item>
         <template #label>
@@ -473,11 +474,11 @@ watch(appendLibId, () => {
           </div>
         </template>
         <el-row>
-          <el-tag size="large" style="margin: 0 10px 0 10px">
-            {{ convertTime(newOccupation._classTime[0]) }}
+          <el-tag size="large" style="margin: 0 10px 0 10px; width: 110px">
+            已选课时:&nbsp;{{ convertTime(newOccupation._classTime[0]) }}
           </el-tag>
-          <el-tag size="large" type="warning" style="margin: 0 10px 0 10px">
-            最大课时: {{ timeExcess }}
+          <el-tag size="large" type="warning" style="margin: 0 10px 0 10px; width: 110px">
+            最大课时:&nbsp;{{ timeExcess }}
           </el-tag>
         </el-row>
       </el-descriptions-item>
@@ -493,7 +494,7 @@ watch(appendLibId, () => {
         <el-slider v-model="newOccupation._classTime[0].time" range show-stops :max="12" :min="1" />
       </el-form-item>
       <el-form-item label="课室安排" label-width="10%">
-        <el-select v-model="appendLibId[0]">
+        <el-select v-model="appendLibId[0]" @change="changeLib()">
           <el-option
             v-for="tempLib of loadData.libs.value"
             :key="tempLib._libId"
@@ -601,7 +602,7 @@ watch(appendLibId, () => {
         <el-slider v-model="newOccupation._classTime[0].time" range show-stops :max="12" :min="1" />
       </el-form-item>
       <el-form-item label="课室安排" label-width="10%">
-        <el-select v-model="appendLibId[0]">
+        <el-select v-model="appendLibId[0]" @change="changeLib()">
           <el-option
             v-for="tempLib of loadData.libs.value"
             :key="tempLib._libId"

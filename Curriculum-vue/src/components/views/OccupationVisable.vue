@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Lib } from '@/components/classes/Lib'
-import { onMounted, type Ref, ref, watch } from 'vue'
+import { computed, onMounted, type Ref, ref, watch } from 'vue'
 import { dayConvert, Occupation } from '@/components/classes/Occupation'
 
 interface timeTableItem {
@@ -33,7 +33,8 @@ let props = defineProps({
 let tableWidth = ref('1000px')
 let localLib = ref(props.lib as Lib)
 let tips = ref('')
-let weekNum = ref(1)
+let weekIndex = ref(1)
+const weekNum = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 let week: Ref<(timeTableItem | false)[][]> = ref([
   [false, false, false, false, false, false, false, false, false, false, false, false],
   [false, false, false, false, false, false, false, false, false, false, false, false],
@@ -72,7 +73,7 @@ function convert() {
     localLib.value = props.lib as Lib
     for (const [index, occupation] of props.lib._libOccupations.entries()) {
       for (const classTime of occupation._classTime) {
-        if (classTime.week[0] <= weekNum.value && weekNum.value <= classTime.week[1]) {
+        if (classTime.week[0] <= weekIndex.value && weekIndex.value <= classTime.week[1]) {
           for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
             tempTable[classTime.day - 1][i] = {
               name: occupation._course._courseName,
@@ -88,7 +89,7 @@ function convert() {
   }
   if (typeof props?.newOccupation === 'object') {
     const classTime = props.newOccupation._classTime[0]
-    if (classTime.week[0] <= weekNum.value && weekNum.value <= classTime.week[1]) {
+    if (classTime.week[0] <= weekIndex.value && weekIndex.value <= classTime.week[1]) {
       let right = true
       for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
         if (week.value[classTime.day - 1][i] != false) {
@@ -117,21 +118,33 @@ watch(
   props,
   () => {
     convert()
-    console.log('startConvert', props)
   },
   {
     immediate: true
   }
 )
+watch(weekIndex, () => {
+  convert()
+})
 </script>
 
 <template>
-  <el-descriptions
-    class="margin-top"
-    :title="'第' + weekNum.toString() + '周' + localLib?._libId.toString() + '课表'"
-    :column="1"
-    size="small"
-    border>
+  <el-descriptions class="margin-top" :column="1" size="small" border>
+    <template #title>
+      <el-row style="max-height: 30px">
+        <p style="font-size: medium; margin: auto 10px auto 0">
+          {{ localLib._libId }}{{ localLib._libType }}课表&nbsp;周次选择
+        </p>
+        <el-segmented
+          v-model="weekIndex"
+          :options="weekNum"
+          size="large"
+          style="max-height: 30px" />
+        <p style="color: red; font-size: medium; margin: auto 10px auto auto" v-if="tips != ''">
+          {{ tips }}
+        </p>
+      </el-row>
+    </template>
     <template v-for="(day, indexDay) of week" :key="indexDay">
       <el-descriptions-item>
         <template #label>
@@ -156,7 +169,6 @@ watch(
       </el-descriptions-item>
     </template>
   </el-descriptions>
-  <h3 style="color: red" v-if="tips != ''">{{ tips }}</h3>
 </template>
 
 <style scoped>

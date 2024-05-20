@@ -18,10 +18,12 @@ const siderWidth = ref('200px')
       <el-container>
         <!-- 主要区域容器 -->
         <el-main>
-          <el-card class="pm-layout-main overflow-scroll">
-            <suspense>
-              <router-view />
-            </suspense>
+          <el-card class="pm-layout-main overflow-scroll" style="height: 99%">
+            <el-scrollbar height="600">
+              <suspense>
+                <router-view />
+              </suspense>
+            </el-scrollbar>
           </el-card>
         </el-main>
       </el-container>
