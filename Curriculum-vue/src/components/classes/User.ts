@@ -1,9 +1,10 @@
 export class User {
-  _userName: string
-  _userAccount: string
-  _userPassword: string
-  _email: string
-  _gender: number
+  id: string
+  name: string
+  account: string
+  password: string
+  email: string
+  gender: number
 
   constructor(
     userName: string,
@@ -12,11 +13,12 @@ export class User {
     email: string,
     gender: number
   ) {
-    this._userName = userName
-    this._userAccount = userAccount
-    this._userPassword = userPassword
-    this._email = email
-    this._gender = gender
+    this.id = ''
+    this.name = userName
+    this.account = userAccount
+    this.password = userPassword
+    this.email = email
+    this.gender = gender
   }
 }
 
@@ -42,10 +44,14 @@ export function convertNumber(x: number) {
   }
 }
 
-export function stringifyUser(user: User) {
-  return JSON.stringify(user)
-}
-
-export function parseUser(json: string) {
-  return <User>JSON.parse(json)
+export function userBuilder(responseData: any): User {
+  const user = new User(
+    responseData?.name,
+    responseData?.account,
+    responseData?.password,
+    responseData?.email,
+    responseData?.gender
+  )
+  user.id = responseData?.id
+  return user
 }

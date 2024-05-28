@@ -28,14 +28,14 @@ const routers: Array<RouteRecordRaw> = [
           isLogin: true
         }
       },
-      {
-        path: 'lib',
-        name: 'lib',
-        component: () => import('../views/IsLogin/Lib/LibView.vue'),
-        meta: {
-          isLogin: true
-        }
-      },
+      // {
+      //   path: 'lib',
+      //   name: 'lib',
+      //   component: () => import('../views/IsLogin/Lib/LibView.vue'),
+      //   meta: {
+      //     isLogin: true
+      //   }
+      // },
       {
         path: 'test',
         name: 'test',
@@ -43,15 +43,15 @@ const routers: Array<RouteRecordRaw> = [
         meta: {
           isLogin: true
         }
-      },
-      {
-        path: 'course',
-        name: 'course',
-        component: () => import('../views/IsLogin/Course/CourseView.vue'),
-        meta: {
-          isLogin: true
-        }
       }
+      // {
+      //   path: 'course',
+      //   name: 'course',
+      //   component: () => import('../views/IsLogin/Course/CourseView.vue'),
+      //   meta: {
+      //     isLogin: true
+      //   }
+      // }
     ]
   }
 ]

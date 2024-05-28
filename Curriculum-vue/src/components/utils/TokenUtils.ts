@@ -1,15 +1,9 @@
 import { deCode, enCode } from '../utils/EncodeUtils'
-import { type User } from '@/components/classes/User'
 
 //根据userAccount创建token
-export function buildToken(user: User) {
-  //console.debug(user._userName)
-  const userData: string = '{(' + user._userAccount + ')(' + Date.now().toString() + ')}'
-  const cryptoStr: string = enCode(userData)
-  // noinspection UnnecessaryLocalVariableJS
-  const token: string = userData + '$' + cryptoStr
-  //console.debug('userdata:', userData, '\ntoken:', token)
-  return token
+export function buildToken(primevalToken: string) {
+  const cryptoStr: string = enCode(primevalToken)
+  return primevalToken + '$' + cryptoStr
 }
 
 //验证token
@@ -20,4 +14,12 @@ export function verifyToken(token: string | null) {
     // console.debug('front: ', split[0], '\ndecode:', deCrypto)
     return deCrypto === split[0]
   } else return false
+}
+
+export function getServerToken(): string | null {
+  let token = sessionStorage.getItem('token')
+  if (token != null) {
+    token = token.split('$')[0]
+  }
+  return token
 }
