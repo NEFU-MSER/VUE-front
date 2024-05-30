@@ -5,13 +5,13 @@ import { cloneDeep } from 'lodash'
 import axios from 'axios'
 import { getServerToken } from '@/components/utils/TokenUtils'
 import { ElMessageBox } from 'element-plus'
-import { types } from 'sass'
-import Map = types.Map
 
 const props = defineProps({
   userTemp: { type: User, required: true },
   url: { type: String, required: true }
 })
+const emits = defineEmits(['updated'])
+
 const user = ref(cloneDeep(props.userTemp))
 const passwordAgain = ref('')
 const tips = ref('')
@@ -21,14 +21,18 @@ async function submit() {
   await axios
     .post(
       props.url,
-      JSON.stringify({
+      {
         token: getServerToken(),
         data: user.value
-      })
+      }
     )
     .then(async (res) => {
       if (res.data.code != 200) {
         await ElMessageBox.alert(res.data.message, res.data.code.toString()).catch()
+        location.reload()
+      }else {
+        emits('updated')
+        await ElMessageBox.alert('修改成功', '提示').catch()
       }
     })
     .catch((e) => {

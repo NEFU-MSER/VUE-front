@@ -28,14 +28,14 @@ const routers: Array<RouteRecordRaw> = [
           isLogin: true
         }
       },
-      // {
-      //   path: 'lib',
-      //   name: 'lib',
-      //   component: () => import('../views/IsLogin/Lib/LibView.vue'),
-      //   meta: {
-      //     isLogin: true
-      //   }
-      // },
+      {
+        path: 'lib',
+        name: 'lib',
+        component: () => import('../views/IsLogin/Lib/LibView.vue'),
+        meta: {
+          isLogin: true
+        }
+      },
       {
         path: 'test',
         name: 'test',
@@ -43,15 +43,23 @@ const routers: Array<RouteRecordRaw> = [
         meta: {
           isLogin: true
         }
+      },
+      {
+        path: 'course',
+        name: 'course',
+        component: () => import('../views/IsLogin/Course/CourseView.vue'),
+        meta: {
+          isLogin: true
+        }
+      },
+      {
+        path: 'occupation',
+        name: 'occupation',
+        component: () => import('../views/IsLogin/Occupation/OccupationView.vue'),
+        meta: {
+          isLogin: true
+        }
       }
-      // {
-      //   path: 'course',
-      //   name: 'course',
-      //   component: () => import('../views/IsLogin/Course/CourseView.vue'),
-      //   meta: {
-      //     isLogin: true
-      //   }
-      // }
     ]
   }
 ]
@@ -68,7 +76,6 @@ router.beforeEach((to, from, next) => {
     //判断storage是否有登录信息
     if (token != null) {
       if (verifyToken(token)) {
-        console.debug('is login')
         next()
       } else {
         console.debug('fake token')
@@ -83,7 +90,6 @@ router.beforeEach((to, from, next) => {
       })
     }
   } else {
-    console.debug('no need login')
     next()
   }
 })

@@ -5,7 +5,6 @@ import { Box, Female, Male, Postcard, User as UserIcon } from '@element-plus/ico
 let props = defineProps({
   user: { type: User, required: true }
 })
-console.log('show init')
 </script>
 
 <template>

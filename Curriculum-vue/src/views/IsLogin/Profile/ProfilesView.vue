@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ProfileData } from '@/views/IsLogin/Profile/profileData'
+import { profileData } from '@/views/IsLogin/Profile/profileData'
 import ProfileShow from '@/components/views/profileShow/profileShow.vue'
 import { onMounted, ref } from 'vue'
 import ProfileChange from '@/components/views/profileChange/profileChage.vue'
 
-const profileData = new ProfileData('http://localhost:8080/api/user/profile')
 const changeUrl = 'http://localhost:8080/api/user/change'
 
 const loaded = ref(false)
@@ -14,6 +13,11 @@ onMounted(async () => {
   await profileData.init()
   loaded.value = true
 })
+
+async function finish(){
+  await profileData.init()
+  change.value = false
+}
 </script>
 
 <template>
@@ -30,6 +34,7 @@ onMounted(async () => {
     <profile-change
       :url="changeUrl"
       :user-temp="profileData.user"
+      @updated="finish()"
       v-if="profileData.user != null" />
   </el-dialog>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import OccupationVisible from '@/components/views/OccupationVisable.vue'
+import OccupationVisible from '@/components/views/occupationVisible/OccupationTable.vue'
 import { User } from '@/components/classes/User'
 import { Course } from '@/components/classes/Course'
 import { Lib } from '@/components/classes/Lib'

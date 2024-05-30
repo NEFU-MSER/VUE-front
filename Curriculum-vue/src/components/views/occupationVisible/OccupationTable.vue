@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Lib } from '@/components/classes/Lib'
-import { computed, onMounted, type Ref, ref, watch } from 'vue'
-import { dayConvert, Occupation } from '@/components/classes/Occupation'
+import { type Ref, ref, watch } from 'vue'
+import { Occupation, dayConvert } from '@/components/classes/Occupation'
 
 interface timeTableItem {
   colourIndex: number
@@ -10,28 +9,26 @@ interface timeTableItem {
   long: number
 }
 
-// 屏幕宽度
-const windowWidth = ref(0)
-// 屏幕高度
-const windowHeight = ref(0)
-// 生命周期
-onMounted(() => {
-  getWindowResize()
-  window.addEventListener('resize', getWindowResize)
+const props = defineProps({
+  occupations: {
+    type: Array<Occupation>,
+    required: true
+  },
+  newOccupation: {
+    type: Occupation,
+    default: null
+  },
+  libName: {
+    type: String,
+    required: true
+  },
+  remainderTime: {
+    type: Number,
+    default: 0
+  }
 })
-// 获取屏幕尺寸
-const getWindowResize = function () {
-  windowWidth.value = window.innerWidth
-  windowHeight.value = window.innerHeight
-}
+const emits = defineEmits(['conflict', 'overLength', 'correct'])
 
-let props = defineProps({
-  lib: Object,
-  newOccupation: Occupation
-})
-
-let tableWidth = ref('1000px')
-let localLib = ref(props.lib as Lib)
 let tips = ref('')
 let weekIndex = ref(1)
 const weekNum = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
@@ -69,47 +66,63 @@ function convert() {
     [false, false, false, false, false, false, false, false, false, false, false, false],
     [false, false, false, false, false, false, false, false, false, false, false, false]
   ]
-  if (typeof props?.lib === 'object') {
-    localLib.value = props.lib as Lib
-    for (const [index, occupation] of props.lib._libOccupations.entries()) {
-      for (const classTime of occupation._classTime) {
-        if (classTime.week[0] <= weekIndex.value && weekIndex.value <= classTime.week[1]) {
-          for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
-            tempTable[classTime.day - 1][i] = {
-              name: occupation._course._courseName,
-              colourIndex: index % 10,
-              start: i == classTime.time[0] - 1,
-              long: i == classTime.time[0] ? classTime.time[1] - classTime.time[0] + 1 : 0
-            }
-          }
+  const map = new Map<string, number>()
+  let count = 0
+  if (props.occupations?.length == 0 && typeof props.newOccupation == 'undefined') {
+    return
+  }
+  for (const occupation of props.occupations) {
+    if (occupation.week[0] <= weekIndex.value && weekIndex.value <= occupation.week[1]) {
+      let index = map.get(occupation.courseId)
+      if (typeof index == 'undefined') {
+        index = count
+        map.set(occupation.courseId, index)
+        count++
+      }
+      for (let i = occupation.time[0] - 1; i < occupation.time[1]; i++) {
+        tempTable[occupation.day - 1][i] = {
+          name: occupation.courseName,
+          colourIndex: index % 10,
+          start: i == occupation.time[0] - 1,
+          long: i == occupation.time[0] ? occupation.time[1] - occupation.time[0] + 1 : 0
         }
       }
     }
-    week.value = tempTable
   }
-  if (typeof props?.newOccupation === 'object') {
-    const classTime = props.newOccupation._classTime[0]
-    if (classTime.week[0] <= weekIndex.value && weekIndex.value <= classTime.week[1]) {
+  week.value = tempTable
+  if (props.newOccupation) {
+    const newOccupation = props.newOccupation
+    if (newOccupation.week[0] <= weekIndex.value && weekIndex.value <= newOccupation.week[1]) {
       let right = true
-      for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
-        if (week.value[classTime.day - 1][i] != false) {
-          right = false
-          break
+      if (newOccupation.calculate() <= props.remainderTime) {
+        for (let i = newOccupation.time[0] - 1; i < newOccupation.time[1]; i++) {
+          if (week.value[newOccupation.day - 1][i] != false) {
+            right = false
+            emits('conflict')
+            break
+          }
         }
+      } else {
+        tips.value = '课时超时'
+        emits('overLength')
+        return
       }
       if (right) {
-        for (let i = classTime.time[0] - 1; i < classTime.time[1]; i++) {
-          tempTable[classTime.day - 1][i] = {
-            name: props.newOccupation._course._courseName,
+        for (let i = newOccupation.time[0] - 1; i < newOccupation.time[1]; i++) {
+          tempTable[newOccupation.day - 1][i] = {
+            name: props.newOccupation.courseName,
             colourIndex: 10,
-            start: i == classTime.time[0] - 1,
-            long: i == classTime.time[0] - 1 ? classTime.time[1] - classTime.time[0] + 1 : 0
+            start: i == newOccupation.time[0] - 1,
+            long:
+              i == newOccupation.time[0] - 1 ? newOccupation.time[1] - newOccupation.time[0] + 1 : 0
           }
           week.value = tempTable
         }
         tips.value = ''
+        emits('correct')
       } else {
         tips.value = '时间冲突'
+        emits('conflict')
       }
     }
   }
@@ -129,46 +142,48 @@ watch(weekIndex, () => {
 </script>
 
 <template>
-  <el-descriptions class="margin-top" :column="1" size="small" border>
-    <template #title>
-      <el-row style="max-height: 30px">
-        <p style="font-size: medium; margin: auto 10px auto 0">
-          {{ localLib._libId }}{{ localLib._libType }}课表&nbsp;周次选择
-        </p>
-        <el-segmented
-          v-model="weekIndex"
-          :options="weekNum"
-          size="large"
-          style="max-height: 30px" />
-        <p style="color: red; font-size: medium; margin: auto 10px auto auto" v-if="tips != ''">
-          {{ tips }}
-        </p>
-      </el-row>
-    </template>
-    <template v-for="(day, indexDay) of week" :key="indexDay">
-      <el-descriptions-item>
-        <template #label>
-          <div class="cell-item" style="padding: 5px 0 5px 0">
-            {{ dayConvert(indexDay) }}
-          </div>
-        </template>
-        <el-row :style="tableWidth" class="row">
+  <el-row class="row" style="margin-bottom: 15px">
+    <p style="font-size: medium; margin: auto 10px auto 0">{{ props.libName }}课表&nbsp;周次选择</p>
+    <el-segmented v-model="weekIndex" :options="weekNum" size="large" style="max-height: 30px" />
+    <p style="color: red; font-size: medium; margin: auto 10px auto auto" v-if="tips != ''">
+      {{ tips }}
+    </p>
+  </el-row>
+  <template v-for="(day, indexDay) of week" :key="indexDay">
+    <el-row>
+      <el-col :span="1" style="margin: 5px 0 5px 0">
+        <div class="cell-item" style="padding: 5px 0 5px 0">
+          {{ dayConvert(indexDay + 1) }}
+        </div>
+      </el-col>
+      <el-col :span="23" style="margin: 5px 0 5px 0">
+        <el-row class="row">
           <template v-for="(time, indexTime) of day" :key="indexTime">
             <template v-if="time == false">
               <el-col :span="2" style="height: 30px">
-                <h4 class="none">第{{ indexTime + 1 }}节</h4>
+                <div class="none">
+                  <h4 class="text">第{{ indexTime + 1 }}节</h4>
+                </div>
               </el-col>
             </template>
             <template v-else>
               <el-col :span="time.long * 2" :v-if="time.start">
-                <h4 class="startAndEnd" :style="colour[time.colourIndex]">{{ time.name }}</h4>
+                <div class="startAndEnd" :style="colour[time.colourIndex]">
+                  <h4 class="text">
+                    {{
+                      time.long * 4 < time.name.length
+                        ? time.name.slice(0, time.long * 4 - 1) + '...'
+                        : time.name
+                    }}
+                  </h4>
+                </div>
               </el-col>
             </template>
           </template>
         </el-row>
-      </el-descriptions-item>
-    </template>
-  </el-descriptions>
+      </el-col>
+    </el-row>
+  </template>
 </template>
 
 <style scoped>
@@ -201,13 +216,18 @@ watch(weekIndex, () => {
 .startAndEnd {
   border-radius: 5px;
   text-decoration: none;
+  margin: 0 2px 0 2px;
+  height: 100%;
+}
+.text {
   color: rgba(17, 17, 17, 0.6);
   font-weight: bold;
   font-size: medium;
   font-family: 'Microsoft YaHei UI Light', serif;
   text-align: center;
-  margin: 0 2px 0 2px;
-  height: 100%;
+}
+.center {
+  margin: auto;
 }
 h4 {
   margin: auto;
