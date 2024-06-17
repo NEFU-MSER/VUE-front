@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { User, convertNumber } from '@/components/classes/User'
-import { Box, Female, Male, Postcard, User as UserIcon } from '@element-plus/icons-vue'
+import { Box, CreditCard, Female, Male, Postcard, User as UserIcon } from '@element-plus/icons-vue'
 
 let props = defineProps({
   user: { type: User, required: true }
@@ -46,7 +46,7 @@ let props = defineProps({
       <template #label>
         <div class="cell-item">
           <el-icon><Postcard /></el-icon>
-          账号
+          账号(电话号码)
         </div>
       </template>
       <p>{{ props?.user.account }}</p>
@@ -60,6 +60,16 @@ let props = defineProps({
         </div>
       </template>
       <p>{{ props?.user.email }}</p>
+    </el-descriptions-item>
+    <!--  身份证  -->
+    <el-descriptions-item>
+      <template #label>
+        <div class="cell-item">
+          <el-icon><CreditCard /></el-icon>
+          身份证
+        </div>
+      </template>
+      <p>{{ props?.user.idCard }}</p>
     </el-descriptions-item>
   </el-descriptions>
 </template>

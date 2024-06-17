@@ -2,16 +2,16 @@ import { User, convertString } from '@/components/classes/User'
 import axios from 'axios'
 import router from '@/router'
 import { ElMessageBox } from 'element-plus'
-import { ResultVO } from '@/components/utils/ResultVO'
 import { buildToken } from '@/components/utils/TokenUtils'
 import { ref } from 'vue'
+import { urlRoot } from '@/main'
 
 export async function submit() {
   const user = convert()
   console.debug(user)
   await axios({
     method: 'POST',
-    url: 'http://localhost:8080/api/user/signIn',
+    url: urlRoot + '/api/user/signIn',
     data: user
   })
     .then(async (response) => {
@@ -30,20 +30,23 @@ export async function submit() {
 export const checkUser = ref({
   name: '',
   account: '',
+  idCard: '',
   password: '',
   passwordAgain: '',
   emailHead: '',
-  emailSelect: '',
-  gender: ''
+  emailSelect: '@nefu.edu.cn',
+  gender: 'male'
 })
 
-export let disable = true
+export const disable = ref(true)
 axios.defaults.timeout = 5000
+export const tips = ref('')
 
 function convert(): User {
   return new User(
     checkUser.value.name,
     checkUser.value.account,
+    checkUser.value.idCard,
     checkUser.value.password,
     checkUser.value.emailHead + checkUser.value.emailSelect,
     convertString(checkUser.value.gender)
@@ -51,11 +54,26 @@ function convert(): User {
 }
 
 export function isFull() {
-  disable = !(
-    checkUser.value.account.length === 10 &&
-    checkUser.value.name.length > 0 &&
-    checkUser.value.password.length >= 6 &&
-    checkUser.value.password === checkUser.value.passwordAgain &&
-    checkUser.value.emailHead.length >= 5
-  )
+  if (checkUser.value.name.length <= 0) {
+    tips.value = '请输入姓名'
+    disable.value = true
+  } else if (checkUser.value.account.length != 11) {
+    tips.value = '请输入正确的电话号码'
+    disable.value = true
+  } else if (checkUser.value.idCard.length != 18) {
+    tips.value = '请输入正确的身份证'
+    disable.value = true
+  } else if (checkUser.value.emailHead.length < 5) {
+    tips.value = '邮箱地址太短'
+    disable.value = true
+  } else if (checkUser.value.password.length < 6) {
+    tips.value = '密码太短'
+    disable.value = true
+  } else if (checkUser.value.password != checkUser.value.passwordAgain) {
+    tips.value = '两次密码不相等'
+    disable.value = true
+  } else {
+    tips.value = ''
+    disable.value = false
+  }
 }

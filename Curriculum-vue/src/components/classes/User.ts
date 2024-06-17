@@ -2,6 +2,7 @@ export class User {
   id: string
   name: string
   account: string
+  idCard: string
   password: string
   email: string
   gender: number
@@ -9,6 +10,7 @@ export class User {
   constructor(
     userName: string,
     userAccount: string,
+    userIdCard: string,
     userPassword: string,
     email: string,
     gender: number
@@ -16,6 +18,7 @@ export class User {
     this.id = ''
     this.name = userName
     this.account = userAccount
+    this.idCard = userIdCard
     this.password = userPassword
     this.email = email
     this.gender = gender
@@ -44,10 +47,12 @@ export function convertNumber(x: number) {
   }
 }
 
+//  从后端发过来的json文件构建一个user对象
 export function userBuilder(responseData: any): User {
   const user = new User(
     responseData?.name,
     responseData?.account,
+    responseData?.idCard,
     responseData?.password,
     responseData?.email,
     responseData?.gender

@@ -5,17 +5,23 @@ const routers: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/LoginView/LoginView.vue')
+    component: () => import('@/views/NoLogin/LoginView/LoginView.vue'),
+    meta: {
+      title: '课程管理平台登陆'
+    }
   },
   {
     path: '/signIn',
     name: 'signIn',
-    component: () => import('../views/SignInView/SignInView.vue')
+    component: () => import('@/views/NoLogin/SignInView/SignInView.vue'),
+    meta: {
+      title: '用户注册'
+    }
   },
   {
     path: '/main',
     name: 'main',
-    component: () => import('../views/IsLogin/MainPage/MainView.vue'),
+    component: () => import('../views/NeedLogin/MainPage/MainView.vue'),
     meta: {
       isLogin: true
     },
@@ -23,41 +29,10 @@ const routers: Array<RouteRecordRaw> = [
       {
         path: 'profile',
         name: 'profile',
-        component: () => import('../views/IsLogin/Profile/ProfilesView.vue'),
+        component: () => import('../views/NeedLogin/Profile/ProfilesView.vue'),
         meta: {
-          isLogin: true
-        }
-      },
-      {
-        path: 'lib',
-        name: 'lib',
-        component: () => import('../views/IsLogin/Lib/LibView.vue'),
-        meta: {
-          isLogin: true
-        }
-      },
-      {
-        path: 'test',
-        name: 'test',
-        component: () => import('@/components/views/TestView.vue'),
-        meta: {
-          isLogin: true
-        }
-      },
-      {
-        path: 'course',
-        name: 'course',
-        component: () => import('../views/IsLogin/Course/CourseView.vue'),
-        meta: {
-          isLogin: true
-        }
-      },
-      {
-        path: 'occupation',
-        name: 'occupation',
-        component: () => import('../views/IsLogin/Occupation/OccupationView.vue'),
-        meta: {
-          isLogin: true
+          isLogin: true,
+          title: '个人信息'
         }
       }
     ]
@@ -70,6 +45,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title as string
+  }
   if (to.meta.isLogin) {
     //判断该路由是否需要权限
     const token = sessionStorage.getItem('token')

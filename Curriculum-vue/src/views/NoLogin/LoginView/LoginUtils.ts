@@ -1,10 +1,31 @@
 import axios from 'axios'
 import router from '@/router'
-import { ResultVO } from '@/components/utils/ResultVO'
 import { buildToken } from '@/components/utils/TokenUtils'
 import { ElMessageBox } from 'element-plus'
+import { urlRoot } from '@/main'
+import { ref } from 'vue'
 
 axios.defaults.timeout = 5000
+
+export const loginForm = ref({
+  account: '',
+  password: ''
+})
+export const tips = ref('')
+export const disable = ref(true)
+
+export function isFull() {
+  if (loginForm.value.account.length != 11) {
+    disable.value = true
+    tips.value = '账号要求11位手机号'
+  } else if (loginForm.value.password.length < 6) {
+    disable.value = true
+    tips.value = '密码要大于等于6位'
+  } else {
+    disable.value = false
+    tips.value = ''
+  }
+}
 
 export async function submit(account: string, password: string) {
   const loginForm = {
@@ -13,7 +34,7 @@ export async function submit(account: string, password: string) {
   }
   await axios({
     method: 'POST',
-    url: 'http://localhost:8080/api/user/login',
+    url: urlRoot + '/api/user/login',
     data: loginForm
   })
     .then(async (response) => {

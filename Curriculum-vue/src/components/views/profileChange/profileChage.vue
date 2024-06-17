@@ -19,18 +19,15 @@ const disable = ref(true)
 
 async function submit() {
   await axios
-    .post(
-      props.url,
-      {
-        token: getServerToken(),
-        data: user.value
-      }
-    )
+    .post(props.url, {
+      token: getServerToken(),
+      data: user.value
+    })
     .then(async (res) => {
       if (res.data.code != 200) {
         await ElMessageBox.alert(res.data.message, res.data.code.toString()).catch()
         location.reload()
-      }else {
+      } else {
         emits('updated')
         await ElMessageBox.alert('修改成功', '提示').catch()
       }
