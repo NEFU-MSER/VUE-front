@@ -136,4 +136,36 @@ export class LocalDB {
   "message": "用户已存在"
 }
 ```
+⑤ 每一个需要和后端交互的类都要写一个从json构建对象的函数  
+比如[User.ts](Curriculum-vue/src/components/classes/User.ts)
+里面就有一个userBuilder()
+```ts
+//  从后端发过来的json文件构建一个user对象
+export function userBuilder(responseData: any): User {
+  const user = new User(
+    //  这里的 ?. 意思是不确定responseData里面是否有name，直接用 . 可能会导致有时候报错
+    responseData?.name,
+    responseData?.account,
+    responseData?.idCard,
+    responseData?.password,
+    responseData?.email,
+    responseData?.gender
+  )
+  user.id = responseData?.id
+  return user
+}
+```
+这个函数在[profileData.ts](Curriculum-vue/src/views/NeedLogin/Profile/ProfileData.ts)
+里面就有用到
+```ts
+then(async (res) => {
+  //  如果后端返回的结果代号不是200，证明后端的响应有错误
+  if (res.data.code === 200) {
+    //  这里就调用了我们写类的时候写的从json构建User的函数
+    this.user = userBuilder(res.data.data.user)
+  } else {
+    // ......
+  }
+})
+```
 
