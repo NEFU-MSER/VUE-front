@@ -1,9 +1,8 @@
 # 软工实习组前端仓库
 
 ## 组员
-组长：陆晔
-
-组员：张小鹏 左峻毓 罗丹兵
+组长：陆晔  
+组员：张小鹏 左峻毓 罗丹兵  
 ### 组员分工
 #### 前端架构、数据约定
 陆晔
@@ -39,7 +38,7 @@ await axios({
 正确做法：  
 ```ts
 import axios from 'axios'
-//  从main中引入url的根，到时候统一修改很方便
+//  从main中引入url的根，到时候统一修改很方便, urlRoot = 'http://localhost:8080'
 import { urlRoot } from '@/main'
 
 await axios({
