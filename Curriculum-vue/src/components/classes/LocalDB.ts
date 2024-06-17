@@ -1,4 +1,4 @@
-import { ProfileData } from '@/views/NeedLogin/Profile/profileData'
+import { ProfileData } from '@/views/NeedLogin/Profile/ProfileData'
 import { urlRoot } from '@/main'
 
 export class LocalDB {
