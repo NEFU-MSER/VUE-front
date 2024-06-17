@@ -18,7 +18,7 @@ SpringBoot
 
 ## 约定开发规范
 ① 按照组件化的方式开发自己的页面，页面中可重用的元素要求拆分出来成为组件(注意拆分的粒度不要太细，也不要不拆分)
-可以参考这个[Profile](Curriculum-vue/src/views/NeedLogin/Profile)
+可以参考这个[Profile](Curriculum-vue/src/views/NeedLogin/Profile)  
 ② 所有要访问后端的代码，不要写死访问的连接  
 错误示范：
 ```ts
