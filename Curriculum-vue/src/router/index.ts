@@ -34,6 +34,24 @@ const routers: Array<RouteRecordRaw> = [
           isLogin: true,
           title: '个人信息'
         }
+      },
+      {
+        path: 'department',
+        name: 'department',
+        component: () => import('../views/NeedLogin/Department/DepartmentView.vue'),
+        meta: {
+          isLogin: true,
+          title: '科室管理'
+        }
+      },
+      {
+        path: 'role',
+        name: 'role',
+        component: () => import('../views/NeedLogin/Role/RoleView.vue'),
+        meta: {
+          isLogin: true,
+          title: '职务管理'
+        }
       }
     ]
   }

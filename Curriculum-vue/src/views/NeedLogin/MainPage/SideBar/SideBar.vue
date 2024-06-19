@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Location } from '@element-plus/icons-vue'
-import { bar1 } from '@/views/NeedLogin/SideBar/SideBarItem'
+import { bar1 } from '@/views/NeedLogin/MainPage/SideBar/SideBarItem'
 </script>
 
 <template>
@@ -16,7 +16,9 @@ import { bar1 } from '@/views/NeedLogin/SideBar/SideBarItem'
       <!-- 子菜单 -->
       <template v-for="[j, group] in bar1.entries()" :key="j">
         <el-menu-item-group>
-          <template #title><span>用户管理</span></template>
+          <template #title>
+            <span>{{ group.name }}</span>
+          </template>
           <template v-for="[i, item] in group.items.entries()" :key="i">
             <router-link :to="item.path">
               <el-menu-item :index="j.toString() + '-' + i.toString()">

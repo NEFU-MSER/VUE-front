@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import Sider from '@/views/NeedLogin/SideBar/SideBar.vue'
+import Sider from '@/views/NeedLogin/MainPage/SideBar/SideBar.vue'
 import { RouterView } from 'vue-router'
 
 const siderWidth = ref('200px')

@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import ProfileShow from '@/components/views/profileShow/profileShow.vue'
+import ProfileShow from '@/views/NeedLogin/Profile/profileShow/profileShow.vue'
 import { onMounted, ref } from 'vue'
-import ProfileChange from '@/components/views/profileChange/profileChage.vue'
+import ProfileChange from '@/views/NeedLogin/Profile/profileChange/profileChage.vue'
 import { urlRoot, localDB } from '@/main'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router'
 
 const changeUrl = urlRoot + '/api/user/change'
 
-const loaded = ref(false)
 const change = ref(false)
 const profileData = localDB.profileData
 
 onMounted(async () => {
-  await profileData.init()
-  loaded.value = true
+  if (profileData.loaded.value == false) {
+    await profileData.init()
+  }
 })
 
 async function finish() {
@@ -42,18 +42,22 @@ async function logOut() {
 </script>
 
 <template>
-  <el-row>
-    <el-col :span="4">
-      <p>个人信息</p>
-    </el-col>
-    <el-col :span="3" :offset="15">
-      <el-button @click="change = true" type="primary">修改个人信息</el-button>
-    </el-col>
-    <el-col :span="2">
-      <el-button @click="logOut()" type="danger">登出</el-button>
-    </el-col>
-  </el-row>
-  <profile-show :user="profileData.user" v-if="loaded && profileData.user != null" />
+  <div style="min-height: 200px" v-loading="!profileData.loaded.value">
+    <el-row>
+      <el-col :span="4">
+        <p>个人信息</p>
+      </el-col>
+      <el-col :span="3" :offset="15">
+        <el-button @click="change = true" type="primary">修改个人信息</el-button>
+      </el-col>
+      <el-col :span="2">
+        <el-button @click="logOut()" type="danger">登出</el-button>
+      </el-col>
+    </el-row>
+    <profile-show
+      :user="profileData.user"
+      v-if="profileData.loaded.value && profileData.user != null" />
+  </div>
   <el-dialog v-model="change" title="修改个人信息" width="70%">
     <profile-change
       :url="changeUrl"

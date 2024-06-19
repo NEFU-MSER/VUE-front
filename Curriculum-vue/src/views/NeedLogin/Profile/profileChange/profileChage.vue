@@ -71,17 +71,17 @@ watch(passwordAgain, () => {
 </script>
 
 <template>
-  <el-form>
-    <el-form-item label="姓名" label-width="10%">
+  <el-form label-width="10%">
+    <el-form-item label="姓名">
       <el-input v-model="user.name" />
     </el-form-item>
-    <el-form-item label="邮箱" label-width="10%">
+    <el-form-item label="邮箱">
       <el-input v-model="user.email" />
     </el-form-item>
-    <el-form-item label="密码" label-width="10%">
+    <el-form-item label="密码">
       <el-input v-model="user.password" type="password" />
     </el-form-item>
-    <el-form-item label="确认密码" label-width="10%">
+    <el-form-item label="确认密码">
       <el-input v-model="passwordAgain" type="password" />
     </el-form-item>
     <el-form-item>

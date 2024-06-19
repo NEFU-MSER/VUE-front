@@ -4,12 +4,14 @@ import { getServerToken } from '@/components/utils/TokenUtils'
 import { ElMessageBox } from 'element-plus'
 import { ResultVO } from '@/components/utils/ResultVO'
 import router from '@/router'
+import { ref } from 'vue'
 //  无参的构造函数下要引用main里面的urlRoot
 //  import { urlRoot } from '@/main'
 
 export class ProfileData {
-  user: User | null = null
-  url: string = ''
+  loaded = ref(false)
+  user: User = new User('null', '', '', '', '', 0)
+  private url: string = ''
 
   //  写构造函数的时候不要在里面写初始化，不然所有的页面的所有数据都会在打开的一瞬间加载，后端会去世的
   //  构造函数获取url的根，你也可以在这里直接写无参的构造函数，在下面的axios那边我们讲无参的构造函数怎么写url
@@ -31,8 +33,10 @@ export class ProfileData {
         if (res.data.code === 200) {
           //  这里就调用了我们写类的时候写的从json构建User的函数
           this.user = userBuilder(res.data.data.user)
+          this.loaded.value = true
         } else {
           //  如果后端报错了，我们也可以接住后端的报错数据，就在 res.data.message 里面，你可以直接复制这段代码 👇
+          this.loaded.value = false
           const resData = new ResultVO(res.data.code, res.data.message)
           //  如果后端返回的结果代号是403，那就代表登陆失效了，这段代码会让页面跳转到登陆页
           if (resData.code == 403) {
