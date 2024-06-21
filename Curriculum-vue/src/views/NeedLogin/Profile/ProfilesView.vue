@@ -29,6 +29,7 @@ async function logOut() {
     type: 'warning'
   })
     .then(async () => {
+      localDB.destroy()
       sessionStorage.clear()
       await router.push('/main')
     })

@@ -127,7 +127,13 @@ export class DepartmentData {
             sessionStorage.clear()
             await router.push('/main')
           }
-          await ElMessageBox.alert(resData.message, resData.code.toString()).catch()
+          await ElMessageBox.alert(resData.message, resData.code.toString())
+            .catch()
+            .finally(() => {
+              if (resData.code == 406) {
+                this.loaded.value = true
+              }
+            })
         }
       })
       .catch((e) => {
@@ -159,7 +165,6 @@ export class DepartmentData {
           this.refresh(tempList)
           this.loaded.value = true
         } else {
-          this.loaded.value = false
           const resData = new ResultVO(res.data.code, res.data.message)
           if (resData.code == 403) {
             sessionStorage.clear()

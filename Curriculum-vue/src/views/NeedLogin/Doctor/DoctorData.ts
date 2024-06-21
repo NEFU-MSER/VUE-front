@@ -1,23 +1,23 @@
 import { type Ref, ref } from 'vue'
-import { Role } from '@/components/classes/Role'
+import type { Doctor } from '@/components/classes/Doctor'
 import axios from 'axios'
 import { ResultVO } from '@/components/utils/ResultVO'
 import router from '@/router'
 import { ElMessageBox } from 'element-plus'
-import { roleBuilder } from '@/components/classes/Role'
+import { doctorBuilder } from '@/components/classes/Doctor'
 
-export class RoleData {
+export class DoctorData {
   loaded: Ref<boolean> = ref(false)
   private url: string
-  roleList: Ref<Role[]>
+  doctorList: Ref<Doctor[]>
 
   constructor(url: string) {
     this.url = url
-    this.roleList = ref(new Array<Role>())
+    this.doctorList = ref(new Array<Doctor>())
   }
 
-  refresh(newList: Array<Role>) {
-    this.roleList.value = newList
+  refresh(newList: Array<Doctor>) {
+    this.doctorList.value = newList
   }
 
   async init() {
@@ -26,8 +26,8 @@ export class RoleData {
       .then(async (res) => {
         if (res.data.code === 200) {
           const tempList = []
-          for (const role of res.data.data.roles) {
-            const temp = roleBuilder(role)
+          for (const doctor of res.data.data.doctors) {
+            const temp = doctorBuilder(doctor)
             if (temp.id != '0000000000000000000') {
               tempList.push(temp)
             }
@@ -49,9 +49,9 @@ export class RoleData {
       })
   }
 
-  async add(role: Role): Promise<void> {
+  async add(doctor: Doctor): Promise<void> {
     await axios
-      .post(this.url + '/add', role, {
+      .post(this.url + '/add', doctor, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -59,8 +59,8 @@ export class RoleData {
       .then(async (res) => {
         if (res.data.code === 200) {
           const tempList = []
-          for (const role of res.data.data.roles) {
-            const temp = roleBuilder(role)
+          for (const doctor of res.data.data.doctors) {
+            const temp = doctorBuilder(doctor)
             if (temp.id != '0000000000000000000') {
               tempList.push(temp)
             }
@@ -82,9 +82,9 @@ export class RoleData {
       })
   }
 
-  async update(role: Role): Promise<void> {
+  async update(doctor: Doctor): Promise<void> {
     await axios
-      .post(this.url + '/update', role, {
+      .post(this.url + '/update', doctor, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -92,8 +92,8 @@ export class RoleData {
       .then(async (res) => {
         if (res.data.code === 200) {
           const tempList = []
-          for (const role of res.data.data.roles) {
-            const temp = roleBuilder(role)
+          for (const doctor of res.data.data.doctors) {
+            const temp = doctorBuilder(doctor)
             if (temp.id != '0000000000000000000') {
               tempList.push(temp)
             }
@@ -125,8 +125,8 @@ export class RoleData {
       .then(async (res) => {
         if (res.data.code === 200) {
           const tempList = []
-          for (const role of res.data.data.roles) {
-            const temp = roleBuilder(role)
+          for (const doctor of res.data.data.doctors) {
+            const temp = doctorBuilder(doctor)
             if (temp.id != '0000000000000000000') {
               tempList.push(temp)
             }
@@ -145,14 +145,5 @@ export class RoleData {
       .catch((e) => {
         console.error(e)
       })
-  }
-
-  getById(id: string): Role | null {
-    for (const item of this.roleList.value) {
-      if (item.id == id) {
-        return item
-      }
-    }
-    return null
   }
 }

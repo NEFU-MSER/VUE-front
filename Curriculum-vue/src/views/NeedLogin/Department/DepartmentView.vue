@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import ChangeDepartment from '@/views/NeedLogin/Department/ChangeForm/ChangeDepartment.vue'
 import { Department } from '@/components/classes/Department'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import VditorViewer from '@/components/Vditor/VditorViewer.vue'
+import VditorViewer from '@/components/Vditor/MarkdownViewer.vue'
 
 const departmentData = localDB.departmentData
 const changeBoxVisible = ref(false)
@@ -64,7 +64,7 @@ async function initDelete(department: Department) {
       <el-col :span="4">
         <el-tree
           style="width: 100%"
-          :data="departmentData.departmentsTree"
+          :data="departmentData.departmentsTree.value"
           node-key="id"
           default-expand-all
           :expand-on-click-node="false">

@@ -7,7 +7,7 @@ import { LocalDB } from '@/components/classes/LocalDB'
 
 const app = createApp(App)
 export const urlRoot = 'http://localhost:8080'
-export const localDB = new LocalDB()
+export const localDB = new LocalDB(urlRoot)
 
 app.use(router)
 app.use(ElementPlus)
